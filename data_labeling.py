@@ -8,7 +8,7 @@ import numpy as np
 from typing import Tuple, List
 from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_random_exponential
-from prompts.system_prompt import TRIPLET_LABELING_PROMPT
+from prompts.task_prompt import TRIPLET_LABELING_PROMPT
 
 load_dotenv()
 
@@ -54,6 +54,10 @@ def load_previous_labels(
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('-d',
+                        '--data',
+                        type=str,
+                        default='./data/articles_20230901-20230921.json')
     parser.add_argument('-s', '--start', type=int, default=0)
     parser.add_argument('-e', '--end', type=int, required=True)
     parser.add_argument(
@@ -78,14 +82,14 @@ if __name__ == '__main__':
         ',') if ignored_data_sources else []
     ignored_data_sources = [src.strip() for src in ignored_data_sources]
 
-    articles_df = (
-        pd.read_json('./data/articles_20230901-20230921.json').replace({
-            'article_content': {
-                '': np.nan
-            }
-        }).dropna(subset=['article_content']))
-    articles_df = articles_df[~articles_df['source_name'].
-                              isin(ignored_data_sources)]
+    articles_df = (pd.read_json(args.data).replace({
+        'article_content': {
+            '': np.nan
+        }
+    }).dropna(subset=['article_content']))
+    if ignored_data_sources:
+        articles_df = articles_df[~articles_df['source_name'].
+                                  isin(ignored_data_sources)]
     articles_df = articles_df.iloc[start_index:end_index]
 
     previous_labels_df, labels_list, labelers_list = load_previous_labels(
