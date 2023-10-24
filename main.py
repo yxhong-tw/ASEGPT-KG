@@ -4,21 +4,38 @@ import json
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-fp', '--file_path', required=True)
-    parser.add_argument('-m', '--mode', help='full or substr', required=True)
+    parser.add_argument(
+        '-fp',
+        '--file_path',
+        required=True,
+    )
+    parser.add_argument(
+        '-m',
+        '--mode',
+        help='\"full\" or \"substr\"',
+        required=True,
+    )
 
     args = parser.parse_args()
 
     file_path = args.file_path
     mode = args.mode
 
-    # data: list[dict]
     data = load_data(file_path=file_path)
 
     evalute(data=data, mode=mode)
 
 
-def load_data(file_path):
+def load_data(file_path: str) -> list[dict]:
+    """Load evaluting data
+
+    Args:
+        file_path (str): Path to the evaluting data
+
+    Returns:
+        list[dict]: Evaluting data
+    """
+
     with open(file=file_path, mode='r', encoding='UTF-8') as file:
         data = json.load(file)
 
@@ -27,7 +44,16 @@ def load_data(file_path):
     return data
 
 
-def evalute(data, mode):
+def evalute(data: list[dict], mode: str):
+    """Evalute the prediction
+
+    Args:
+        data (list[dict]): Evaluting data
+        mode (str): "full" or "substr", "full" means the prediction string must be the same as the label string, "substr" means the prediction string can be a substring of the label string.
+
+    Raises:
+        Exception: Invalid mode
+    """
     if mode == 'full':
         mip, mir, mif = check_full_string(data=data)
     elif mode == 'substr':
@@ -40,7 +66,15 @@ def evalute(data, mode):
     print(f"micro-f1: {mif}")
 
 
-def check_full_string(data):
+def check_full_string(data: list[dict]) -> tuple[float, float, float]:
+    """Check strings in prediction and label with full mode
+
+    Args:
+        data (list[dict]): Evaluting data
+
+    Returns:
+        tuple[float, float, float]: micro-precision, micro-recall, micro-f1
+    """
     pres = []
     res = []
 
@@ -84,7 +118,15 @@ def check_full_string(data):
     return micro_pre, micro_re, micro_f1
 
 
-def check_sub_string(data):
+def check_sub_string(data: list[dict]) -> tuple[float, float, float]:
+    """Check strings in prediction and label with substr mode
+
+    Args:
+        data (list[dict]): Evaluting data
+
+    Returns:
+        tuple[float, float, float]: micro-precision, micro-recall, micro-f1
+    """
     pres = []
     res = []
 
@@ -144,7 +186,17 @@ def check_sub_string(data):
     return micro_pre, micro_re, micro_f1
 
 
-def get_precision_recall(tp, fp, fn):
+def get_precision_recall(tp: int, fp: int, fn: int) -> tuple[float, float]:
+    """Calculate precision and recall
+
+    Args:
+        tp (int): True positive
+        fp (int): False positive
+        fn (int): False negative
+
+    Returns:
+        tuple[float, float]: precision, recall
+    """
     pre = 0
     re = 0
 
