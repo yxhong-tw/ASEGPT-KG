@@ -8,8 +8,8 @@ import numpy as np
 from typing import Tuple, List
 from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_random_exponential
-from prompts.task_prompt import TRIPLET_LABELING_PROMPT, TRIPLET_FULL_LABELING_PROMPT, TRIPLET_LABELING_WITH_EXPLANATION_PROMPT_2K
-from prompts.task_prompt import EXPLANATION_LABELING_PROMPT
+from prompts.task_prompt import RELATION_EXTRACTION_PROMPT, UNFILTERED_RELATION_EXTRACTION_PROMPT, RELATION_EXTRACTION_WITH_EXPLANATION_PROMPT_2K
+from prompts.task_prompt import TRIPLETS_EXPLANATION_LABELING_PROMPT
 from prompts.system_prompt import CHINESE_ALPACA_SYSTEM_PROMPT
 
 load_dotenv()
@@ -62,13 +62,13 @@ def load_previous_labels(
 
 def get_prompt_template(task_type: str):
     if task_type == 'triplet':
-        return TRIPLET_LABELING_PROMPT
+        return RELATION_EXTRACTION_PROMPT
     elif task_type == 'triplet_full':
-        return TRIPLET_FULL_LABELING_PROMPT
+        return UNFILTERED_RELATION_EXTRACTION_PROMPT
     elif task_type == 'triplet_with_explanation':
-        return TRIPLET_LABELING_WITH_EXPLANATION_PROMPT_2K
+        return RELATION_EXTRACTION_WITH_EXPLANATION_PROMPT_2K
     elif task_type == 'explanation':
-        return EXPLANATION_LABELING_PROMPT
+        return TRIPLETS_EXPLANATION_LABELING_PROMPT
 
 
 if __name__ == '__main__':
