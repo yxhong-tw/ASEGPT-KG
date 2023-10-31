@@ -8,7 +8,8 @@ import numpy as np
 from typing import Tuple, List
 from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_random_exponential
-from prompts.task_prompt import TRIPLET_LABELING_PROMPT
+from prompts.task_prompt import TRIPLET_LABELING_PROMPT, TRIPLET_FULL_LABELING_PROMPT, TRIPLET_LABELING_WITH_EXPLANATION_PROMPT_2K
+from prompts.task_prompt import EXPLANATION_LABELING_PROMPT
 
 load_dotenv()
 
@@ -52,6 +53,17 @@ def load_previous_labels(
     return previous_labels_df, labels_list, labelers_list
 
 
+def get_prompt_template(task_type: str):
+    if task_type == 'triplet':
+        return TRIPLET_LABELING_PROMPT
+    elif task_type == 'triplet_full':
+        return TRIPLET_FULL_LABELING_PROMPT
+    elif task_type == 'triplet_with_explanation':
+        return TRIPLET_LABELING_WITH_EXPLANATION_PROMPT_2K
+    elif task_type == 'explanation':
+        return EXPLANATION_LABELING_PROMPT
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-d',
@@ -71,6 +83,13 @@ if __name__ == '__main__':
                         type=str,
                         default='./output/results.json')
     parser.add_argument('--ignore', type=str, default='')
+    parser.add_argument('--task',
+                        type=str,
+                        choices=[
+                            'triplet', 'triplet_full',
+                            'triplet_with_explanation', 'explanation'
+                        ],
+                        required=True)
     args = parser.parse_args()
 
     model = args.model
@@ -97,7 +116,10 @@ if __name__ == '__main__':
     labeled_results = pd.concat([previous_labels_df, articles_df],
                                 ignore_index=True)
 
-    prompt_template = TRIPLET_LABELING_PROMPT
+    task_type = args.task
+    prompt_template = get_prompt_template(task_type)
+    gpt_max_tokens = 2048 if model == 'gpt-3.5-turbo' else 4096
+
     try:
         for i, article in articles_df.iterrows():
             article_content = article['article_content']
@@ -106,12 +128,17 @@ if __name__ == '__main__':
             print(article_content)
             print('->')
 
-            prompt = prompt_template.replace('{INPUT}', article_content)
-            triplets_result = call_gpt_api(prompt, model)
-            labels_list.append(triplets_result)
+            triplets = article['label'] if task_type == 'explanation' else ''
+            prompt = prompt_template.format(INPUT=article_content,
+                                            TRIPLETS=triplets)
+
+            response = call_gpt_api(prompt, model, gpt_max_tokens)
+            response = f'{triplets}\n解釋：{response}' if task_type == 'explanation' else response
+
+            labels_list.append(response)
             labelers_list.append(model)
 
-            print(triplets_result)
+            print(response)
             print()
 
             time.sleep(0.5)
