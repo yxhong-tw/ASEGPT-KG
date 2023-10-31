@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 from prompts.task_prompt import TRIPLET_LABELING_PROMPT, TRIPLET_FULL_LABELING_PROMPT, TRIPLET_LABELING_WITH_EXPLANATION_PROMPT_2K
 from prompts.task_prompt import EXPLANATION_LABELING_PROMPT
+from prompts.system_prompt import CHINESE_ALPACA_SYSTEM_PROMPT
 
 load_dotenv()
 
@@ -22,7 +23,13 @@ def chatcompletion_with_backoff(**kwargs) -> openai.ChatCompletion:
 def call_gpt_api(prompt: str, model='gpt-3.5-turbo', max_tokens=1024) -> str:
     openai.api_key = os.getenv('OPENAI_API_KEY')
 
-    messages = [{'role': 'user', 'content': prompt}]
+    messages = [{
+        'role': 'system',
+        'content': CHINESE_ALPACA_SYSTEM_PROMPT
+    }, {
+        'role': 'user',
+        'content': prompt
+    }]
     completion = chatcompletion_with_backoff(model=model,
                                              max_tokens=max_tokens,
                                              temperature=0,
