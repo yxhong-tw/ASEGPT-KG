@@ -1,3 +1,20 @@
+RELATION_EXTRACTION_SCHEMA = {
+    'name': 'relation_extraction',
+    'parameters': {
+        'type': 'object',
+        'properties': {
+            'triplets': {
+                'type': 'array',
+                'items': {
+                    'type': 'string'
+                },
+                'description': 'The triplets extracted from the input text.'
+            }
+        },
+        'required': ['triplets']
+    }
+}
+
 RELATION_EXTRACTION_WITH_RATIONALE_SCHEMA = {
     'name': 'relation_extraction_with_rationale',
     'parameters': {
