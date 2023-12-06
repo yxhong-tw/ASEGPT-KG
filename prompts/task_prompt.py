@@ -6,21 +6,21 @@ RELATION_EXTRACTION_PROMPT = '''
     <答案>
 '''
 
-RELATION_EXTRACTION_WITH_EXPLANATION_PROMPT_2K = '''
+UNFILTERED_RELATION_EXTRACTION_PROMPT = '''
+    給定一段新聞段落，請幫我從中找出所有的知識圖譜三元組 (頭實體, 關係, 尾實體)，如果有你覺得有缺失的關係，請把它補上。 注意：新聞段落內可能有一個以上的三元組存在，若有多個三元組，格式請以[(頭實體1, 關係1, 尾實體1), (頭實體2, 關係2, 尾實體2)]以此類推呈現。
+    {DEMONSTRATION}
+    <新聞段落>
+    {INPUT}
+    <答案>
+'''
+
+RELATION_EXTRACTION_WITH_RATIONALE_PROMPT = '''
     你將執行關係抽取(Relation Extraction)任務。你將識別內容中的命名實體，然後提取它們之間的關係。
     讓我們一步一步思考，根據我提供的新聞段落，你將傳回格式為"命名實體 A, 關係, 命名實體 B"的三元組(Triplet)，與三元組對應的解釋(Rationale)。
     請多注意新聞段落中的量詞（例如：12%）及代名詞等（例如：他），這些應為組成新聞的重要資訊。
     首先給你一個範例，幫助你理解任務：
     {DEMONSTRATION}
     接著給你要做的新聞段落：
-    <新聞段落>
-    {INPUT}
-    <答案>
-'''
-
-UNFILTERED_RELATION_EXTRACTION_PROMPT = '''
-    給定一段新聞段落，請幫我從中找出所有的知識圖譜三元組 (頭實體, 關係, 尾實體)，如果有你覺得有缺失的關係，請把它補上。 注意：新聞段落內可能有一個以上的三元組存在，若有多個三元組，格式請以[(頭實體1, 關係1, 尾實體1), (頭實體2, 關係2, 尾實體2)]以此類推呈現。
-    {DEMONSTRATION}
     <新聞段落>
     {INPUT}
     <答案>
