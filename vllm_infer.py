@@ -63,7 +63,7 @@ def get_prompt(strategy: Literal['alpaca', 'chatml'],
         If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.
 
         ### Instruction:
-        給定一段新聞段落，請幫我從中找出所有的知識圖譜三元組 (頭實體, 關係, 尾實體)。請幫我過濾掉對於構成新聞段落不重要的三元組，並只給我過濾後的結果。 注意：新聞段落內可能有一個以上的三元組存在，若有多個三元組，格式請以[(頭實體1, 關係1, 尾實體1), (頭實體2, 關係2, 尾實體2)]以此類推呈現。
+        你將執行關係抽取(Relation Extraction)任務。你將識別內容中的命名實體，然後提取它們之間的關係。讓我們一步一步思考，根據我提供的新聞段落，你將傳回格式為"命名實體 A, 關係, 命名實體 B"的三元組(Triplet)。請多注意新聞段落中的量詞（例如：12%）及代名詞等（例如：他），這些應為組成新聞的重要資訊。
 
         ### Input:
         {input_text}
@@ -77,7 +77,7 @@ def get_prompt(strategy: Literal['alpaca', 'chatml'],
             '''
 
         return f'''<|im_start|>system\nBelow is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n<|im_end|>\n
-        <|im_start|>user\n給定一段新聞段落，請幫我從中找出所有的知識圖譜三元組 (頭實體, 關係, 尾實體)。請幫我過濾掉對於構成新聞段落不重要的三元組，並只給我過濾後的結果。 注意：新聞段落內可能有一個以上的三元組存在，若有多個三元組，格式請以[(頭實體1, 關係1, 尾實體1), (頭實體2, 關係2, 尾實體2)]以此類推呈現。\n{input_text}<|im_end|>\n<|im_start|>assistant\n
+        <|im_start|>user\n你將執行關係抽取(Relation Extraction)任務。你將識別內容中的命名實體，然後提取它們之間的關係。讓我們一步一步思考，根據我提供的新聞段落，你將傳回格式為"命名實體 A, 關係, 命名實體 B"的三元組(Triplet)。請多注意新聞段落中的量詞（例如：12%）及代名詞等（例如：他），這些應為組成新聞的重要資訊。\n{input_text}<|im_end|>\n<|im_start|>assistant\n
         '''
 
     raise ValueError(f'Unsupported strategy: {strategy}')
