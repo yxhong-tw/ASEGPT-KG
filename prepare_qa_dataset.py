@@ -19,7 +19,7 @@ from llama_index_server import (
 
 
 def generate_response(questions_df: pd.DataFrame,
-                      query_engine: RouterQueryEngine):
+                      query_engine: RouterQueryEngine) -> List[dict]:
     results = []
     for i, row in questions_df.iterrows():
         question = row['question']
@@ -35,9 +35,11 @@ def generate_response(questions_df: pd.DataFrame,
         }
         results.append(result)
 
+    return results
+
 
 def initialize_rag_settings(doc_paths: List[str], space_names: List[str],
-                            persist_dirs: List[str]):
+                            persist_dirs: List[str]) -> RouterQueryEngine:
     assert len(space_names) == len(
         persist_dirs
     ), 'Length of space_names and persist_dirs should be the same.'
@@ -66,11 +68,11 @@ def initialize_rag_settings(doc_paths: List[str], space_names: List[str],
     engine_tools = convert_to_query_engine_tool(
         engines,
         names=[
-            RAG_QUERY_ENGINE_TOOLS_MAPPING[space_name].name
+            RAG_QUERY_ENGINE_TOOLS_MAPPING[space_name]['name']
             for space_name in space_names
         ],
         descriptions=[
-            RAG_QUERY_ENGINE_TOOLS_MAPPING[space_name].description
+            RAG_QUERY_ENGINE_TOOLS_MAPPING[space_name]['description']
             for space_name in space_names
         ])
 
@@ -91,6 +93,8 @@ def main(args: argparse.Namespace):
     results = generate_response(questions_df, query_engine)
     with open(file=args.output_path, mode='w', encoding='UTF-8') as f:
         json.dump(results, f, ensure_ascii=False, indent=4)
+
+    print(f'Output file saved to {args.output_path}')
 
 
 if __name__ == '__main__':
