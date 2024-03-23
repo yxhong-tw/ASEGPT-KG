@@ -2,7 +2,6 @@ import json
 import os
 from typing import List, Literal, Tuple, Union
 
-from app.utils.data_model import KnwoledgeGraphQueryRequest
 from dotenv import load_dotenv
 from llama_index.core import (
     Document,
@@ -16,14 +15,8 @@ from llama_index.core import (
 )
 from llama_index.core.graph_stores.types import GraphStore
 from llama_index.core.indices.base import BaseIndex
-from llama_index.core.objects import ObjectIndex, SimpleToolNodeMapping
-from llama_index.core.query_engine import (
-    BaseQueryEngine,
-    RetrieverQueryEngine,
-    RouterQueryEngine,
-)
+from llama_index.core.query_engine import BaseQueryEngine, RetrieverQueryEngine
 from llama_index.core.retrievers import KGTableRetriever, VectorIndexRetriever
-from llama_index.core.selectors import LLMMultiSelector
 from llama_index.core.tools import QueryEngineTool
 from llama_index.graph_stores.nebula import NebulaGraphStore
 from llama_index.llms.openai import OpenAI
@@ -72,8 +65,9 @@ def load_service_and_storage(
     return service_context, storage_context
 
 
-def set_global_service(chunk_size: int = 4096, using_openai_gpt: bool = False) -> ServiceContext:
-    
+def set_global_service(chunk_size: int = 4096,
+                       using_openai_gpt: bool = False) -> ServiceContext:
+
     if using_openai_gpt:
         llm = OpenAI(temperature=0.1, model='gpt-3.5-turbo')
     # else:
@@ -187,7 +181,7 @@ def load_multi_docs(file_names: List[str]) -> List[List[Document]]:
     documents = []
     for file_name in file_names:
         single_aspect_docs = []
-        with open(f'{os.getcwd()}/app/data/{file_name}') as f:
+        with open(file_name, 'r') as f:
             json_data = json.load(f)
             if 'semiconductor' not in file_name:
                 if len(json_data) >= 500:
@@ -238,8 +232,7 @@ def convert_to_query_engine_tool(
     names: Union[str, List[str]], descriptions: Union[str, List[str]]
 ) -> Union[QueryEngineTool, List[QueryEngineTool]]:
 
-    assert isinstance(query_engines) == isinstance(names) == isinstance(
-        descriptions)
+    assert type(query_engines) == type(names) == type(descriptions)
 
     assert len(query_engines) == len(names) == len(descriptions)
 
