@@ -7,6 +7,7 @@ from llama_index.core.query_engine import RouterQueryEngine
 from llama_index.core.selectors import LLMMultiSelector
 
 from llama_index_server import (
+    RAG_QUERY_ENGINE_TOOLS_MAPPING,
     convert_to_query_engine_tool,
     load_engine,
     load_multi_doc_index,
@@ -65,14 +66,12 @@ def initialize_rag_settings(doc_paths: List[str], space_names: List[str],
     engine_tools = convert_to_query_engine_tool(
         engines,
         names=[
-            'war_query_engine_tool, silicon_query_engine_tool, ai_query_engine_tool',
-            'semiconductor_query_engine_tool'
+            RAG_QUERY_ENGINE_TOOLS_MAPPING[space_name].name
+            for space_name in space_names
         ],
         descriptions=[
-            'Useful for answering questions about "China–United States trade war" and its impact on the world',
-            'Useful for answering questions about "Silicon Photonics development trend" and its impact on the world',
-            'Useful for answering questions about "Artificial Intelligence(AI)" and "AI Chips development trend" and its impact on the world',
-            'Useful for answering questions about "General Semiconductor development trend" or "Commonsense of Semiconductor".'
+            RAG_QUERY_ENGINE_TOOLS_MAPPING[space_name].description
+            for space_name in space_names
         ])
 
     return RouterQueryEngine(selector=LLMMultiSelector.from_defaults(),
