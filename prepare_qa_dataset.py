@@ -7,7 +7,6 @@ from llama_index.core.query_engine import RouterQueryEngine
 from llama_index.core.selectors import LLMMultiSelector
 
 from llama_index_server import (
-    connect_to_nebula_graph,
     convert_to_query_engine_tool,
     load_engine,
     load_multi_doc_index,
@@ -41,8 +40,6 @@ def initialize_rag_settings(doc_paths: List[str], space_names: List[str],
     assert len(space_names) == len(
         persist_dirs
     ), 'Length of space_names and persist_dirs should be the same.'
-
-    is_connected = connect_to_nebula_graph()
 
     documents = load_multi_docs(doc_paths)
 
@@ -101,7 +98,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # Nebula Graph Store
-    parser.add_argument('--space_name', type=str, action='append', nargs='+')
+    parser.add_argument('--space_name',
+                        type=str,
+                        action='append',
+                        nargs='+',
+                        help='Space name(s) to load the graph data from.')
 
     # RAG
     parser.add_argument('-d',
@@ -113,6 +114,8 @@ if __name__ == '__main__':
     parser.add_argument('-p',
                         '--persist_dir',
                         type=str,
+                        action='append',
+                        nargs='+',
                         help='Path to the directory to store the graph data.')
 
     # Data
