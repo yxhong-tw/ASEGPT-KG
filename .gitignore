@@ -166,3 +166,6 @@ nebula*/
 # RAG models / data
 models/
 storages/
+
+# CKIPtagger
+ckiptagger/
