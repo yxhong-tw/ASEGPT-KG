@@ -169,3 +169,6 @@ storages/
 
 # CKIPtagger
 ckiptagger/
+
+# BERTopic
+bertopic/figs/
