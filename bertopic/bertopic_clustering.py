@@ -1,6 +1,7 @@
 import argparse
 import os
 import pickle
+from pathlib import Path
 
 import pandas as pd
 from ckiptagger import WS, construct_dictionary
@@ -23,6 +24,9 @@ def save_topic_figures(topic_model: BERTopic,
                        fig_dir_path: str,
                        prefix_fig_name: str,
                        top_n_topics: int = 10):
+    if not os.path.exists(fig_dir_path):
+        os.mkdir(fig_dir_path)
+
     # 各 Topic TF-IDF 關鍵字直方圖
     bar_fig = topic_model.visualize_barchart(
         top_n_topics=top_n_topics,
@@ -39,9 +43,9 @@ def save_topic_figures(topic_model: BERTopic,
                                                      top_n_topics=top_n_topics,
                                                      width=1000)
 
-    bar_fig.write_html(f'{fig_dir_path}/{prefix_fig_name}-bar_fig.html')
-    topic_fig.write_html(f'{fig_dir_path}/{prefix_fig_name}-topic_fig.html')
-    tot_fig.write_html(f'{fig_dir_path}/{prefix_fig_name}-tot_fig.html')
+    bar_fig.write_html(f'{fig_dir_path}/{prefix_fig_name}_topic_{top_n_topics}-bar_fig.html')
+    topic_fig.write_html(f'{fig_dir_path}/{prefix_fig_name}_topic_{top_n_topics}-topic_fig.html')
+    tot_fig.write_html(f'{fig_dir_path}/{prefix_fig_name}_topic_{top_n_topics}-tot_fig.html')
 
 
 def main(articles_file_path: str,
@@ -50,7 +54,7 @@ def main(articles_file_path: str,
          keywords_file_path: str,
          ckiptagger_model_path: str = './ckiptagger/data',
          use_labels: bool = False,
-         num_topics: int = 10):
+         num_topics: int = None):
 
     article_df = pd.read_json(articles_file_path)
     articles_content = article_df['article_content'].tolist()
@@ -100,15 +104,14 @@ def main(articles_file_path: str,
         clf = LogisticRegression()
         ctfidf_model = ClassTfidfTransformer(reduce_frequent_words=True)
 
-        topic_model = BERTopic(
-            language='chinese (traditional)',
-            verbose=True,
-            embedding_model=emb_model,
-            vectorizer_model=vectorizer_model,
-            umap_model=empty_dimensionality_model,
-            hdbscan_model=clf,
-            ctfidf_model=ctfidf_model,
-            nr_topics=num_topics)
+        topic_model = BERTopic(language='chinese (traditional)',
+                               verbose=True,
+                               embedding_model=emb_model,
+                               vectorizer_model=vectorizer_model,
+                               umap_model=empty_dimensionality_model,
+                               hdbscan_model=clf,
+                               ctfidf_model=ctfidf_model,
+                               nr_topics=num_topics)
     else:
         topic_model = BERTopic(language='chinese (traditional)',
                                verbose=True,
@@ -119,7 +122,7 @@ def main(articles_file_path: str,
     pred_topics, pred_topic_probs = topic_model.fit_transform(
         documents, y=category_labels if use_labels else None)
 
-    article_file_name = articles_file_path.split('/')[-1]
+    article_file_name = Path(articles_file_path).stem
     save_topic_figures(topic_model=topic_model,
                        tot_data=topic_model.topics_over_time(
                            documents,
@@ -127,10 +130,11 @@ def main(articles_file_path: str,
                            pred_topics,
                            nr_bins=num_topics),
                        top_n_topics=num_topics,
-                       fig_dir_path=f'{output_dir_path}/fig',
+                       fig_dir_path=f'{output_dir_path}/figs',
                        prefix_fig_name=article_file_name)
 
-    with open(f'{output_dir_path}/{article_file_name}-topic_info.json',
+    num_topics = num_topics or 'auto'
+    with open(f'{output_dir_path}/{article_file_name}-topic_info_{num_topics}.json',
               'w') as f:
         topic_info_df = topic_model.get_topic_info()
 
@@ -145,7 +149,7 @@ def main(articles_file_path: str,
 
         topic_info_df.to_json(f, orient='records', force_ascii=False, indent=4)
 
-    with open(f'{output_dir_path}/topic_{article_file_name}.json', 'w') as f:
+    with open(f'{output_dir_path}/topic_{num_topics}_{article_file_name}.json', 'w') as f:
         if use_labels:
             article_df['topic_name'] = article_df['topic'].map(mappings)
 
@@ -184,13 +188,19 @@ if __name__ == '__main__':
                         help='Path to the ckiptagger model.')
 
     # BERTopic
-    parser.add_argument('--use_labels',
-                        action=argparse.BooleanOptionalAction,
-                        default=False,
-                        help='Use labels for clustering.')
+    try:
+        parser.add_argument('--use_labels',
+                            action=argparse.BooleanOptionalAction,
+                            default=False,
+                            help='Use labels for clustering.')
+    except AttributeError:
+        parser.add_argument('--use_labels',
+                            action='store_true',
+                            default=False,
+                            help='Use labels for clustering.')
     parser.add_argument('--num_topics',
                         type=int,
-                        default=10,
+                        default=None,
                         help='Number of topics to cluster.')
     args = parser.parse_args()
 
