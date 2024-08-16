@@ -161,3 +161,4 @@ cython_debug/
 
 # Our own custom
 data
+./training/data/*
