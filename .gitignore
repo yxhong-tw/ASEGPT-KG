@@ -160,4 +160,4 @@ cython_debug/
 #.idea/
 
 # Our own custom
-training/data/*/
+training/data/*
