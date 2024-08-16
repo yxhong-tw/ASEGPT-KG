@@ -1,0 +1,83 @@
+base_model: ./exp/mistral/7b-instruct-v0.3/rag_cp_freeze-top25layers-lm_head-trainset_zh-tw-wikipedia_semiconductor/checkpoint-1640
+base_model_config: ./exp/mistral/7b-instruct-v0.3/rag_cp_freeze-top25layers-lm_head-trainset_zh-tw-wikipedia_semiconductor/checkpoint-1640
+model_type: MistralForCausalLM
+tokenizer_type: LlamaTokenizer
+is_mistral_derived_model: true
+
+load_in_8bit: false
+load_in_4bit: true
+strict: false
+
+datasets:
+  # - path: ./data/qa/20240429_qa_all.json
+  # - path: ./data/rag/trainset_20240608_multi_task_instruction_tuning.json
+  # - path: ./data/rag/trainset_20240608_multi_task_instruction_tuning_only_response_synthesis.json
+  - path: ./data/rag/trainset_20240608_multi_task_instruction_tuning_no_response_synthesis.json
+    type: alpaca_w_system.load_open_orca_chatml
+dataset_prepared_path: ./data/last_run_prepared/mistral/7b-instruct-v0.3/trainset_20240608_multi_task_instruction_tuning_no_response_synthesis.json
+val_set_size: 0.01
+output_dir: ./exp/mistral/7b-instruct-v0.3/rag_ift_chatml_qlora_lr6e-4_wd5e-3-trainset_20240608_multi_task_instruction_tuning_no_response_synthesis_rag_cp_freeze-top25layers-lm_head
+
+adapter: qlora
+lora_model_dir:
+
+lora_r: 32
+lora_alpha: 16
+lora_dropout: 0.05
+lora_target_linear: true
+lora_fan_in_fan_out:
+lora_target_modules:
+  - gate_proj
+  - down_proj
+  - up_proj
+  - q_proj
+  - v_proj
+  - k_proj
+  - o_proj
+
+sequence_len: 8192
+sample_packing: true
+pad_to_sequence_len: true
+eval_sample_packing: False
+
+wandb_project:
+wandb_entity:
+wandb_watch:
+wandb_run_id:
+wandb_log_model:
+
+gradient_accumulation_steps: 1
+micro_batch_size: 2
+num_epochs: 7
+optimizer: paged_adamw_32bit
+lr_scheduler: cosine
+learning_rate: 0.0006
+
+train_on_inputs: false
+group_by_length: false
+bf16: true
+fp16: false
+tf32: false
+
+gradient_checkpointing: true
+early_stopping_patience:
+resume_from_checkpoint:
+local_rank:
+logging_steps: 10
+xformers_attention:
+flash_attention: true
+
+warmup_steps: 10
+evals_per_epoch: 4
+eval_table_size:
+eval_max_new_tokens: 512
+saves_per_epoch: 4
+debug:
+deepspeed:
+weight_decay: 0.005
+fsdp:
+fsdp_config:
+special_tokens:
+  bos_token: "<s>"
+  eos_token: "</s>"
+  unk_token: "<unk>"
