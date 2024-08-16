@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM 11.4.3-devel-ubuntu20.04
 
 WORKDIR /root
 
@@ -17,6 +17,6 @@ RUN mkdir -p ~/miniconda3 \
 # Create conda environment and install dependencies
 RUN ~/miniconda3/bin/conda create --name venv python=3.10 -y \
     && ~/miniconda3/envs/venv/bin/pip install -r /root/ASEGPT-KG/requirements.txt \
-    && ~/miniconda3/bin/conda install -n venv -c pytorch faiss-cpu=1.8.0
+    && ~/miniconda3/bin/conda install -n venv -c pytorch -c nvidia faiss-gpu=1.8.0
 
 RUN echo "conda activate venv" >> ~/.bashrc
