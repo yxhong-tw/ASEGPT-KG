@@ -20,3 +20,5 @@ RUN ~/miniconda3/bin/conda create --name venv python=3.10 -y \
     && ~/miniconda3/bin/conda install -n venv -c pytorch -c nvidia faiss-gpu=1.8.0
 
 RUN echo "conda activate venv" >> ~/.bashrc
+
+RUN ~/miniconda3/envs/venv/bin/python ASEGPT-KG/pre_process/bertopic/download_ckiptagger_model.py
