@@ -197,8 +197,8 @@ def process(
             "article_content": one_merged_data["merged_data"],
             "article_creation_date": \
                 data[i]["article_creation_date"] + "," + data[j]["article_creation_date"],
-            "topic": str(data[i]["topic"]) + "," + str(data[j]["topic"]),
-            "raw_article_content": [data[i]["article_content"], data[j]["article_content"]] + data[i]["raw_article_content"] + data[j]["raw_article_content"],
+            "topic_id": str(data[i]["topic_id"]) + "," + str(data[j]["topic_id"]),
+            "raw_article_content": [data[i]["article_content"], data[j]["article_content"]],
         })
 
     save_json(
@@ -242,10 +242,10 @@ if __name__ == "__main__":
         help="The data name.",
     )
     parser.add_argument(
-        "-t",
-        "--topic",
+        "-tid",
+        "--topic_id",
         type=int,
-        help="The topic number.",
+        help="The topic id.",
     )
     parser.add_argument(
         "-op",
@@ -308,11 +308,11 @@ if __name__ == "__main__":
 
     print(f"Data {data_name} loaded successfully!")
 
-    if args.topic is None:
+    if args.topic_id is None:
         params = {
             "model_name": args.model,
             "data_name": args.data_name,
-            "topic": args.topic,
+            "topic_id": args.topic_id,
             "similarity_threshold": args.similarity_threshold,
             "output_path": args.output_path,
         }
@@ -329,19 +329,19 @@ if __name__ == "__main__":
         all_topic_data = {}
 
         for one_data in data:
-            if not one_data["topic"] in all_topic_data.keys():
-                all_topic_data[one_data["topic"]] = []
+            if not one_data["topic_id"] in all_topic_data.keys():
+                all_topic_data[one_data["topic_id"]] = []
 
-            all_topic_data[one_data["topic"]].append(one_data)
+            all_topic_data[one_data["topic_id"]].append(one_data)
 
-        for topic, topic_data in all_topic_data.items():
-            if topic != args.topic:
+        for topic_id, topic_data in all_topic_data.items():
+            if topic_id != args.topic_id:
                 continue
 
             params = {
                 "model_name": args.model,
                 "data_name": args.data_name,
-                "topic": args.topic,
+                "topic_id": args.topic_id,
                 "similarity_threshold": args.similarity_threshold,
                 "output_path": args.output_path,
             }
