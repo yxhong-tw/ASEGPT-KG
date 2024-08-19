@@ -159,9 +159,16 @@ def main(articles_file_path: str,
     with open(f'{output_dir_path}/topic_{num_topics}_{article_file_name}.json',
               'w') as f:
         if use_labels:
-            article_df['topic_name'] = article_df['topic'].map(mappings)
+            article_df['topic'] = article_df['topic'].map(mappings)
+        else:
+            topic_names = []
+            for topic_id in pred_topics:
+                info = topic_info_df[topic_info_df['Topic'] == topic_id].iloc[0]
+                topic_names.append('_'.join(info['Representation']))
 
-        article_df['topic'] = pred_topics
+            article_df['topic'] = topic_names
+
+        article_df['topic_id'] = pred_topics
         article_df.to_json(f, orient='records', force_ascii=False, indent=4)
 
 
