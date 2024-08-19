@@ -5,6 +5,7 @@ WORKDIR /root
 COPY . /root/ASEGPT-KG
 
 RUN apt update \
+    && apt install -y nano \
     && apt install -y wget
 
 # Install Miniconda for Faiss
@@ -26,3 +27,4 @@ RUN ~/miniconda3/envs/venv/bin/python ASEGPT-KG/pre_process/bertopic/download_ck
 ENV VLLM_WORKER_MULTIPROC_METHOD=spawn
 ENV NCCL_IB_DISABLE=1
 ENV MKL_SERVICE_FORCE_INTEL=1
+ENV LANG=C.UTF-8
