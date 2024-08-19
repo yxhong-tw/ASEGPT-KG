@@ -31,8 +31,6 @@ from utils import (
     save_json,
 )
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-
 
 def process(
     data: List[Dict[str, Union[int, List[str], List[List[str]], str]]],
