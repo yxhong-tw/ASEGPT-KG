@@ -39,7 +39,6 @@ def process(
     model: Union[Doc2Vec, FlagModel, SBERT],
     index: faiss.IndexFlatIP,
     params: Dict[str, Union[float, int, str]],
-    is_topic_data: bool = False,
     use_local_lm: bool = True,
 ) -> None:
     """ Merge the given data.
@@ -50,7 +49,6 @@ def process(
         model (Union[Doc2Vec, FlagModel, SBERT]): The language model which is used to get the sentence embedding.
         index (faiss.IndexFlatIP): The FAISS index.
         params (Dict[str, Union[float, int, str]]): The parameters.
-        is_topic_data (bool, optional): Whether the given data is topic data. Defaults to False.
         use_local_lm (bool, optional): Whether to use the local language model to merge articles. Defaults to True.
     """
 
@@ -59,10 +57,8 @@ def process(
     for i in range(len(data)):
         print(f"Processing {i}")
 
-        data_key = "merge_content" if is_topic_data else "article_content"
-
         string_chunks = data_processor.get_string_chunks(
-            text=data[i][data_key])
+            text=data[i]["article_content"])
 
         one_data_chunks = []
 
@@ -133,14 +129,10 @@ def process(
         if search_results[0][0] == i:
             if search_results[1][1] > params["similarity_threshold"]:
                 over_threshold_data.append({
-                    "base_data":
-                    all_data[i]["article"]
-                    if is_topic_data else [all_data[i]["article"]],
+                    "base_data": [all_data[i]["article"]],
                     "base_data_index":
                     all_data[i]["data_index"],
-                    "match_data":
-                    all_data[search_results[1][0]]["article"] if is_topic_data
-                    else [all_data[search_results[1][0]]["article"]],
+                    "match_data": [all_data[search_results[1][0]]["article"]],
                     "match_data_index":
                     all_data[search_results[1][0]]["data_index"],
                     "similarity":
@@ -149,18 +141,11 @@ def process(
         else:
             if search_results[0][1] > params["similarity_threshold"]:
                 over_threshold_data.append({
-                    "base_data":
-                    all_data[i]["article"]
-                    if is_topic_data else [all_data[i]["article"]],
-                    "base_data_index":
-                    all_data[i]["data_index"],
-                    "match_data":
-                    all_data[search_results[0][0]]["article"] if is_topic_data
-                    else [all_data[search_results[0][0]]["article"]],
-                    "match_data_index":
-                    all_data[search_results[0][0]]["data_index"],
-                    "similarity":
-                    search_results[0][1],
+                    "base_data": [all_data[i]["article"]],
+                    "base_data_index": all_data[i]["data_index"],
+                    "match_data": [all_data[search_results[0][0]]["article"]],
+                    "match_data_index": all_data[search_results[0][0]]["data_index"],
+                    "similarity": search_results[0][1],
                 })
 
     gc.collect()
@@ -174,9 +159,47 @@ def process(
 
     merged_data = data_merger.merge()
 
+    output_data = []
+
+    for data_idx, one_data in enumerate(data):
+        break_flag = False
+
+        for one_merged_data in merged_data:
+            if data_idx == one_merged_data["base_data_index"] or \
+                data_idx == one_merged_data["match_data_index"]:
+
+                break_flag = True
+
+                break
+
+        if not break_flag:
+            output_data.append(one_data)
+
+    for one_merged_data in merged_data:
+        i = one_merged_data["base_data_index"]
+        j = one_merged_data["match_data_index"]
+
+        output_data.append({
+            "crawl_datetime": \
+                data[i]["crawl_datetime"] + "," + data[j]["crawl_datetime"],
+            "source_name": \
+                data[i]["source_name"] + "," + data[j]["source_name"],
+            "source_category": \
+                data[i]["source_category"] + "," + data[j]["source_category"],
+            "article_url": \
+                data[i]["article_url"] + "," + data[j]["article_url"],
+            "article_title": \
+                data[i]["article_title"] + "," + data[j]["article_title"],
+            "article_author": \
+                data[i]["article_author"] + "," + data[j]["article_author"],
+            "article_content": one_merged_data["merged_data"],
+            "article_creation_date": \
+                data[i]["article_creation_date"] + "," + data[j]["article_creation_date"],
+        })
+
     save_json(
         file_path=params["output_path"],
-        data=merged_data,
+        data=output_data,
     )
 
     print(
@@ -281,7 +304,7 @@ if __name__ == "__main__":
 
     print(f"Data {data_name} loaded successfully!")
 
-    if not "topic" in data_name:
+    if args.topic is None:
         params = {
             "model_name": args.model,
             "data_name": args.data_name,
@@ -296,7 +319,6 @@ if __name__ == "__main__":
             model=model,
             index=index,
             params=params,
-            is_topic_data=False,
             use_local_lm=args.use_local_lm,
         )
     else:
@@ -326,6 +348,5 @@ if __name__ == "__main__":
                 model=model,
                 index=index,
                 params=params,
-                is_topic_data=True,
                 use_local_lm=args.use_local_lm,
             )
