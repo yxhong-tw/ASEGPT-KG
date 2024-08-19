@@ -28,7 +28,7 @@ def generate(input_text: Union[str, List[str]], model_name_or_path: str,
                                      top_p=args.top_p,
                                      frequency_penalty=0.2)
 
-    llm = LLM(model=model_name_or_path, tensor_parallel_size=4)
+    llm = LLM(model=model_name_or_path, tensor_parallel_size=2)
     if isinstance(input_text, str):
         outputs = llm.generate(get_prompt_func(input_text=input_text),
                                sampling_params)

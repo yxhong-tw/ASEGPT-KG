@@ -22,3 +22,7 @@ RUN ~/miniconda3/bin/conda create --name venv python=3.10 -y \
 RUN echo "conda activate venv" >> ~/.bashrc
 
 RUN ~/miniconda3/envs/venv/bin/python ASEGPT-KG/pre_process/bertopic/download_ckiptagger_model.py
+
+ENV VLLM_WORKER_MULTIPROC_METHOD=spawn
+ENV NCCL_IB_DISABLE=1
+ENV MKL_SERVICE_FORCE_INTEL=1
