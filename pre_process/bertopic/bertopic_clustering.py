@@ -178,7 +178,7 @@ if __name__ == '__main__':
                         '--output_dir_path',
                         type=str,
                         required=True,
-                        help='Path to the output file.')
+                        help='Path to the directory to save the output files.')
 
     # CKIPtagger
     parser.add_argument('-d',
