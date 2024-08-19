@@ -11,7 +11,9 @@ The code:
 
 import argparse
 import faiss
+import gc
 import os
+import torch
 
 import numpy as np
 
@@ -143,6 +145,9 @@ def process(
                         "similarity":
                         one_search_result[1],
                     })
+
+    gc.collect()
+    torch.cuda.empty_cache()
 
     data_merger = DataMerger(
         data=over_threshold_chunks,

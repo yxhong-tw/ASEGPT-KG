@@ -53,8 +53,10 @@ class DataMerger():
 
             self.llm = LLM(
                 model="mistralai/Mistral-7B-Instruct-v0.3",
-                max_model_len=2048,
+                max_model_len=8192,
                 tensor_parallel_size=2,
+                max_num_seqs=128,
+                max_num_batched_tokens=8192,
             )
         else:
             self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
