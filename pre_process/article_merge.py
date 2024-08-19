@@ -57,6 +57,8 @@ def process(
     for i in range(len(data)):
         print(f"Processing {i}")
 
+        data[i]["raw_article_content"] = []
+
         string_chunks = data_processor.get_string_chunks(
             text=data[i]["article_content"])
 
@@ -195,6 +197,8 @@ def process(
             "article_content": one_merged_data["merged_data"],
             "article_creation_date": \
                 data[i]["article_creation_date"] + "," + data[j]["article_creation_date"],
+            "topic": str(data[i]["topic"]) + "," + str(data[j]["topic"]),
+            "raw_article_content": [data[i]["article_content"], data[j]["article_content"]] + data[i]["raw_article_content"] + data[j]["raw_article_content"],
         })
 
     save_json(
