@@ -192,7 +192,7 @@ if __name__ == '__main__':
                         '--docs_file_path',
                         type=str,
                         required=True,
-                        help='Path to the documents file.')
+                        help='Path to the documents file for saving the tokenized documents.')
     parser.add_argument('-k',
                         '--keywords_file_path',
                         type=str,
