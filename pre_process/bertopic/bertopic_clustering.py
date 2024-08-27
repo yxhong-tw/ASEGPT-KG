@@ -100,7 +100,7 @@ def main(articles_file_path: str,
         with open(docs_file_path, 'wb') as f:
             pickle.dump(documents, f)
 
-    emb_model = load_embedding_model(ckiptagger_model_path)
+    emb_model = load_embedding_model()
     vectorizer_model = CountVectorizer(stop_words='english')
     if use_labels:
         num_topics = len(unique_categories)
