@@ -20,7 +20,7 @@ class Doc2Vec():
         ).__init__()
 
         self.model = gensim.models.doc2vec.Doc2Vec.load(
-            "pre_process/outputs/Doc2Vec/65K/checkpoint.model")
+            "/root/ASEGPT-KG/shared_space/models/pre-process/Doc2Vec_65K/checkpoint.model")
         self.simple_preprocess = gensim.utils.simple_preprocess
         self.faiss_index = faiss.IndexFlatL2(self.model.vector_size)
 

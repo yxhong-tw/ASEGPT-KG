@@ -22,7 +22,7 @@ class SBERT(nn.Module):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self.model = SentenceTransformer(
-            model_name_or_path="uer/sbert-base-chinese-nli")
+            model_name_or_path="/root/ASEGPT-KG/shared_space/models/pre-process/sbert-base-chinese-nli")
 
         self.model.to(device=device)
 

@@ -6,8 +6,6 @@ import re
 
 from datasets import load_dataset
 
-from utils import load_json
-
 if __name__ == "__main__":
     """
     If you want to train the Doc2Vec model with self-prepared data, the format of the data should be transform by `data_formatter.py`.

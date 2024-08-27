@@ -275,12 +275,12 @@ if __name__ == "__main__":
         index = faiss.IndexFlatIP(768)
     elif args.model == "BGE":
         model = FlagModel(
-            model_name_or_path="BAAI/bge-large-zh-v1.5",
+            model_name_or_path="/root/ASEGPT-KG/shared_space/models/pre-process/bge-large-zh-v1.5",
             query_instruction_for_retrieval="为这个句子生成表示以用于检索相关文章：")
         index = faiss.IndexFlatIP(1024)
     elif args.model == "BGE-M3":
         model = FlagModel(
-            model_name_or_path="BAAI/bge-m3",
+            model_name_or_path="/root/ASEGPT-KG/shared_space/models/pre-process/bge-m3",
             query_instruction_for_retrieval=
             "Generate a representation for this sentence for retrieving related articles:"
         )

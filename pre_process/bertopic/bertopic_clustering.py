@@ -15,7 +15,7 @@ from bertopic.vectorizers import ClassTfidfTransformer
 
 
 def load_embedding_model(
-        model_name_or_path: str = 'ckiplab/bert-base-chinese-ws'):
+        model_name_or_path: str = '/root/ASEGPT-KG/shared_space/models/pre-process/model_ws'):
     return AutoModelForTokenClassification.from_pretrained(model_name_or_path)
 
 

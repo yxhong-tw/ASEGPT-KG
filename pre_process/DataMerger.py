@@ -52,7 +52,7 @@ class DataMerger():
             )
 
             self.llm = LLM(
-                model="mistralai/Mistral-7B-Instruct-v0.3",
+                model="/root/ASEGPT-KG/shared_space/models/pre-process/Mistral-7B-Instruct-v0.3",
                 max_model_len=8192,
                 tensor_parallel_size=1,
                 max_num_seqs=128,
