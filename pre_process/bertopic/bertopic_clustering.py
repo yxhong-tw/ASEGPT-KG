@@ -4,18 +4,18 @@ import pickle
 from pathlib import Path
 
 import pandas as pd
+from bertopic import BERTopic
+from bertopic.dimensionality import BaseDimensionalityReduction
+from bertopic.vectorizers import ClassTfidfTransformer
 from ckiptagger import WS, construct_dictionary
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
 from transformers import AutoModelForTokenClassification
 
-from bertopic import BERTopic
-from bertopic.dimensionality import BaseDimensionalityReduction
-from bertopic.vectorizers import ClassTfidfTransformer
-
 
 def load_embedding_model(
-        model_name_or_path: str = '/root/ASEGPT-KG/shared_space/models/pre-process/model_ws'):
+    model_name_or_path:
+    str = '/root/ASEGPT-KG/shared_space/models/pre-process/model_ws'):
     return AutoModelForTokenClassification.from_pretrained(model_name_or_path)
 
 
@@ -56,7 +56,8 @@ def main(articles_file_path: str,
          output_dir_path: str,
          docs_file_path: str,
          keywords_file_path: str,
-         ckiptagger_model_path: str = './ckiptagger/data',
+         ckiptagger_model_path:
+         str = '/root/ASEGPT-KG/shared_space/models/pre-process/model_ws',
          use_labels: bool = False,
          num_topics: int = None):
 
@@ -99,7 +100,7 @@ def main(articles_file_path: str,
         with open(docs_file_path, 'wb') as f:
             pickle.dump(documents, f)
 
-    emb_model = load_embedding_model()
+    emb_model = load_embedding_model(ckiptagger_model_path)
     vectorizer_model = CountVectorizer(stop_words='english')
     if use_labels:
         num_topics = len(unique_categories)
@@ -163,7 +164,8 @@ def main(articles_file_path: str,
         else:
             topic_names = []
             for topic_id in pred_topics:
-                info = topic_info_df[topic_info_df['Topic'] == topic_id].iloc[0]
+                info = topic_info_df[topic_info_df['Topic'] ==
+                                     topic_id].iloc[0]
                 topic_names.append('_'.join(info['Representation']))
 
             article_df['topic'] = topic_names
@@ -175,12 +177,11 @@ def main(articles_file_path: str,
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # Data
-    parser.add_argument(
-        '-i',
-        '--articles_file_path',
-        type=str,
-        required=True,
-        help='Path to the articles file.')
+    parser.add_argument('-i',
+                        '--articles_file_path',
+                        type=str,
+                        required=True,
+                        help='Path to the articles file.')
     parser.add_argument('-o',
                         '--output_dir_path',
                         type=str,
@@ -188,21 +189,23 @@ if __name__ == '__main__':
                         help='Path to the directory to save the output files.')
 
     # CKIPtagger
-    parser.add_argument('-d',
-                        '--docs_file_path',
-                        type=str,
-                        required=True,
-                        help='Path to the documents file for saving the tokenized documents.')
+    parser.add_argument(
+        '-d',
+        '--docs_file_path',
+        type=str,
+        required=True,
+        help='Path to the documents file for saving the tokenized documents.')
     parser.add_argument('-k',
                         '--keywords_file_path',
                         type=str,
                         default='./pre_process/bertopic/data/keywords.txt',
                         help="Path to the keywords (don't split) file.")
-    parser.add_argument('-m',
-                        '--ckiptagger_model_path',
-                        type=str,
-                        default='./pre_process/bertopic/data/ckiptagger/data',
-                        help='Path to the ckiptagger model.')
+    parser.add_argument(
+        '-m',
+        '--ckiptagger_model_path',
+        type=str,
+        default='/root/ASEGPT-KG/shared_space/models/pre-process/model_ws',
+        help='Path to the ckiptagger model.')
 
     # BERTopic
     try:
@@ -215,10 +218,13 @@ if __name__ == '__main__':
                             action='store_true',
                             default=False,
                             help='Use labels for clustering.')
-    parser.add_argument('--num_topics',
-                        type=int,
-                        default=None,
-                        help='Number of topics to cluster. If no provided, will be automatically determined.')
+    parser.add_argument(
+        '--num_topics',
+        type=int,
+        default=None,
+        help=
+        'Number of topics to cluster. If no provided, will be automatically determined.'
+    )
     args = parser.parse_args()
 
     main(articles_file_path=args.articles_file_path,
