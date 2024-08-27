@@ -15,7 +15,7 @@ from transformers import AutoModelForTokenClassification
 
 def load_embedding_model(
     model_name_or_path:
-    str = '/root/ASEGPT-KG/shared_space/models/pre-process/ckiptagger'):
+    str = '/root/ASEGPT-KG/shared_space/models/pre-process/ckiptagger/bert-base-chinese-ws'):
     return AutoModelForTokenClassification.from_pretrained(model_name_or_path)
 
 
