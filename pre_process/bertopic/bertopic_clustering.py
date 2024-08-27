@@ -15,7 +15,7 @@ from transformers import AutoModelForTokenClassification
 
 def load_embedding_model(
     model_name_or_path:
-    str = '/root/ASEGPT-KG/shared_space/models/pre-process/model_ws'):
+    str = '/root/ASEGPT-KG/shared_space/models/pre-process/ckiptagger'):
     return AutoModelForTokenClassification.from_pretrained(model_name_or_path)
 
 
@@ -57,7 +57,7 @@ def main(articles_file_path: str,
          docs_file_path: str,
          keywords_file_path: str,
          ckiptagger_model_path:
-         str = '/root/ASEGPT-KG/shared_space/models/pre-process/model_ws',
+         str = '/root/ASEGPT-KG/shared_space/models/pre-process/ckiptagger',
          use_labels: bool = False,
          num_topics: int = None):
 
@@ -204,7 +204,7 @@ if __name__ == '__main__':
         '-m',
         '--ckiptagger_model_path',
         type=str,
-        default='/root/ASEGPT-KG/shared_space/models/pre-process/model_ws',
+        default='/root/ASEGPT-KG/shared_space/models/pre-process/ckiptagger',
         help='Path to the ckiptagger model.')
 
     # BERTopic
